@@ -1,6 +1,6 @@
 {
   "name": "react-native-track-player",
-  "version": "4.1.1",
+  "version": "4.1.1-rockchoir.3",
   "description": "A fully fledged audio module created for music apps",
   "main": "lib/src/index.js",
   "types": "lib/src/index.d.ts",
@@ -12,14 +12,12 @@
     "lint": "eslint src",
     "format": "prettier --write src",
     "types": "tsc --noEmit true",
-    "prepare": "yarn build",
     "example": "yarn --cwd example",
     "pods": "cd example/ios && pod install",
     "bootstrap": "yarn example && yarn && yarn pods",
     "prepublishOnly": "yarn lint",
     "preversion": "yarn lint",
     "version": "yarn format && git add -A src && yarn changelog && git add CHANGELOG.md",
-    "postversion": "if [[ ${npm_package_version} != *'nightly'* ]]; then yarn publish:git && yarn publish:npm; fi",
     "ci:lint": "eslint src --max-warnings=0",
     "ci:format": "prettier --check src",
     "changelog": "conventional-changelog -p angular -s -i CHANGELOG.md -r 1",
@@ -70,7 +68,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/doublesymmetry/react-native-track-player.git"
+    "url": "https://github.com/JulesAKT/react-native-track-player.git"
   },
   "bugs": {
     "url": "https://github.com/doublesymmetry/react-native-track-player/issues"
