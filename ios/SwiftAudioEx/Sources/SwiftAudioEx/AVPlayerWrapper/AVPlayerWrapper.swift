@@ -38,6 +38,12 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
         label: "AVPlayerWrapper.stateQueue",
         attributes: .concurrent
     )
+    // Serial queue for state-change notifications. The delegate touches AVPlayer /
+    // AVPlayerItem (time-pitch algorithm, now-playing info), so it must never run
+    // inside a stateQueue barrier: AVFoundation delivers KVO on the main thread and
+    // our KVO handlers read `state` via stateQueue.sync, which would then wait on
+    // AVFoundation while AVFoundation waits on us (rock-choir-eas #64).
+    fileprivate let stateDelegateQueue = DispatchQueue(label: "AVPlayerWrapper.stateDelegateQueue")
 
     public init() {
         playerTimeObserver = AVPlayerTimeObserver(periodicObserverTimeInterval: timeEventFrequency.getTime())
@@ -70,7 +76,10 @@ class AVPlayerWrapper: AVPlayerWrapperProtocol {
                 let currentState = self._state
                 if (currentState != newValue) {
                     self._state = newValue
-                    self.delegate?.AVWrapper(didChangeState: newValue)
+                    // Notify outside the barrier (see stateDelegateQueue).
+                    self.stateDelegateQueue.async { [weak self] in
+                        self?.delegate?.AVWrapper(didChangeState: newValue)
+                    }
                 }
             }
         }
